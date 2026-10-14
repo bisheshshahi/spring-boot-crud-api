@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 //@Repository
-public interface StudentRepository extends JpaRepository<Student, Long>{
-//which repository(student)
+public interface StudentRepository extends JpaRepository<Student, Long> {
+//which repository(student) to handle
 // handling type of
-// primary key {
-
+// primary key
 //changed class to interface because in class we have to enter query manually
+
 
 }

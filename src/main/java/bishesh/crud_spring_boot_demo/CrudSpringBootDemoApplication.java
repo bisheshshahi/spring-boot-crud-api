@@ -12,7 +12,6 @@ public class CrudSpringBootDemoApplication {
 		SpringApplication.run(CrudSpringBootDemoApplication.class, args);
 		System.out.println("Hello World");
 
-
 	}
 
 }
