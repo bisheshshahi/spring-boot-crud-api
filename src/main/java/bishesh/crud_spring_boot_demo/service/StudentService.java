@@ -4,6 +4,7 @@ import bishesh.crud_spring_boot_demo.entity.Student;
 import bishesh.crud_spring_boot_demo.repository.StudentRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,5 +36,33 @@ public class StudentService {
     public List<Student> getAllStudents(){
          List<Student> studentList = studentRepository.findAll();
          return studentList;
+    }
+
+    public Student updateStudent(Long id, Student studentReq){
+        Optional<Student> existingStudent = studentRepository.findById(id);
+
+        if (existingStudent.isEmpty()) {
+            return null;
+        }
+
+        Student studentToSave = existingStudent.get();
+
+        studentToSave.setName(studentReq.getName());
+        studentToSave.setRollNo(studentReq.getRollNo());
+        studentToSave.setEmail(studentReq.getEmail());
+        studentToSave.setSubject(studentReq.getSubject());
+        studentToSave.setAge(studentReq.getAge());
+
+        return studentRepository.save(studentToSave);
+
+    }
+
+    public Boolean deleteStudent(Long id){
+        Boolean isStudent = studentRepository.existsById(id);
+
+        if(!isStudent) return false;
+
+        studentRepository.deleteById(id);
+        return true;
     }
 }

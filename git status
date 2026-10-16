@@ -1,0 +1,125 @@
+[1mdiff --git a/src/main/java/bishesh/crud_spring_boot_demo/CrudSpringBootDemoApplication.java b/src/main/java/bishesh/crud_spring_boot_demo/CrudSpringBootDemoApplication.java[m
+[1mindex 5568597..69c024f 100644[m
+[1m--- a/src/main/java/bishesh/crud_spring_boot_demo/CrudSpringBootDemoApplication.java[m
+[1m+++ b/src/main/java/bishesh/crud_spring_boot_demo/CrudSpringBootDemoApplication.java[m
+[36m@@ -12,7 +12,6 @@[m [mpublic class CrudSpringBootDemoApplication {[m
+ 		SpringApplication.run(CrudSpringBootDemoApplication.class, args);[m
+ 		System.out.println("Hello World");[m
+ [m
+[31m-[m
+ 	}[m
+ [m
+[31m-}[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/java/bishesh/crud_spring_boot_demo/controller/StudentController.java b/src/main/java/bishesh/crud_spring_boot_demo/controller/StudentController.java[m
+[1mindex 49267c1..c499927 100644[m
+[1m--- a/src/main/java/bishesh/crud_spring_boot_demo/controller/StudentController.java[m
+[1m+++ b/src/main/java/bishesh/crud_spring_boot_demo/controller/StudentController.java[m
+[36m@@ -3,12 +3,10 @@[m [mpackage bishesh.crud_spring_boot_demo.controller;[m
+ import bishesh.crud_spring_boot_demo.entity.Student;[m
+ import bishesh.crud_spring_boot_demo.service.StudentService;[m
+ import org.springframework.http.HttpStatus;[m
+[31m-import org.springframework.http.HttpStatusCode;[m
+ import org.springframework.http.ResponseEntity;[m
+[31m-import org.springframework.web.bind.annotation.PostMapping;[m
+[31m-import org.springframework.web.bind.annotation.RequestBody;[m
+[31m-import org.springframework.web.bind.annotation.RequestMapping;[m
+[31m-import org.springframework.web.bind.annotation.RestController;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.*;[m
+[32m+[m
+[32m+[m[32mimport java.util.List;[m
+ [m
+ @RestController[m
+ @RequestMapping("/api/students")[m
+[36m@@ -20,7 +18,7 @@[m [mpublic class StudentController {[m
+         this.studentService = studentService;[m
+     }[m
+ [m
+[31m-[m
+[32m+[m[32m    //create student[m
+     @PostMapping("/create")[m
+     public ResponseEntity<Student> createStudent(@RequestBody Student student){[m
+ [m
+[36m@@ -31,4 +29,28 @@[m [mpublic class StudentController {[m
+ [m
+     }[m
+ [m
+[32m+[m[32m    //read one student[m
+[32m+[m[32m    @GetMapping("/get/{id}")[m
+[32m+[m[32m    public ResponseEntity<Student> getStudent(@PathVariable Long id){[m
+[32m+[m[32m        Student studentResp = studentService.getStudent(id);[m
+[32m+[m
+[32m+[m[32m        if(studentResp == null){[m
+[32m+[m[32m            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return ResponseEntity.ok(studentResp);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    //read all student[m
+[32m+[m[32m    @GetMapping("getAll")[m
+[32m+[m[32m    public ResponseEntity<List<Student>> getStudents(){[m
+[32m+[m[32m        List<Student> studentList = studentService.getAllStudents();[m
+[32m+[m
+[32m+[m[32m        if(studentList.isEmpty()){[m
+[32m+[m[32m            return ResponseEntity.notFound().build();[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return ResponseEntity.ok(studentList);[m
+[32m+[m[32m    }[m
+[32m+[m
+ }[m
+[1mdiff --git a/src/main/java/bishesh/crud_spring_boot_demo/repository/StudentRepository.java b/src/main/java/bishesh/crud_spring_boot_demo/repository/StudentRepository.java[m
+[1mindex 3608b47..8261034 100644[m
+[1m--- a/src/main/java/bishesh/crud_spring_boot_demo/repository/StudentRepository.java[m
+[1m+++ b/src/main/java/bishesh/crud_spring_boot_demo/repository/StudentRepository.java[m
+[36m@@ -6,11 +6,11 @@[m [mimport org.springframework.stereotype.Component;[m
+ import org.springframework.stereotype.Repository;[m
+ [m
+ //@Repository[m
+[31m-public interface StudentRepository extends JpaRepository<Student, Long>{[m
+[31m-//which repository(student)[m
+[32m+[m[32mpublic interface StudentRepository extends JpaRepository<Student, Long> {[m
+[32m+[m[32m//which repository(student) to handle[m
+ // handling type of[m
+[31m-// primary key {[m
+[31m-[m
+[32m+[m[32m// primary key[m
+ //changed class to interface because in class we have to enter query manually[m
+ [m
+[32m+[m
+ }[m
+[1mdiff --git a/src/main/java/bishesh/crud_spring_boot_demo/service/StudentService.java b/src/main/java/bishesh/crud_spring_boot_demo/service/StudentService.java[m
+[1mindex e27991c..08f308e 100644[m
+[1m--- a/src/main/java/bishesh/crud_spring_boot_demo/service/StudentService.java[m
+[1m+++ b/src/main/java/bishesh/crud_spring_boot_demo/service/StudentService.java[m
+[36m@@ -5,6 +5,9 @@[m [mimport bishesh.crud_spring_boot_demo.repository.StudentRepository;[m
+ import org.springframework.stereotype.Component;[m
+ import org.springframework.stereotype.Service;[m
+ [m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m[32mimport java.util.Optional;[m
+[32m+[m
+ @Service[m
+ public class StudentService {[m
+ [m
+[36m@@ -19,4 +22,18 @@[m [mpublic class StudentService {[m
+         Student studentResp = studentRepository.save(studentReq);[m
+         return studentResp;[m
+     }[m
+[32m+[m
+[32m+[m[32m    public Student getStudent(Long id) {[m
+[32m+[m[32m        Optional<Student> studentResp = studentRepository.findById(id);[m
+[32m+[m
+[32m+[m[32m        if (studentResp.isPresent()) {[m
+[32m+[m[32m            return studentResp.get();[m
+[32m+[m[32m        }[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public List<Student> getAllStudents(){[m
+[32m+[m[32m         List<Student> studentList = studentRepository.findAll();[m
+[32m+[m[32m         return studentList;[m
+[32m+[m[32m    }[m
+ }[m
